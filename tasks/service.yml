@@ -1,0 +1,22 @@
+---
+
+- name: Service tasks
+  when: not ansible_check_mode
+  become: true
+  tags:
+    - sssd_service
+    - sssd
+  block:
+    - name: Manage sssd service
+      when: sssd_service_name is defined and sssd_service_name
+      ansible.builtin.service:
+        name: "{{ sssd_service_name }}"
+        state: "{{ sssd_service_ensure }}"
+        enabled: "{{ sssd_service_enable }}"
+
+    - name: Manage sssd optional service
+      when: sssd_optional_service_name is defined and sssd_optional_service_name
+      ansible.builtin.service:
+        name: "{{ sssd_optional_service_name }}"
+        state: "{{ sssd_optional_service_ensure }}"
+        enabled: "{{ sssd_optional_service_enable }}"

@@ -1,0 +1,29 @@
+---
+
+- name: SSSD tasks
+  tags:
+    - sssd_install
+    - sssd_config
+    - sssd_service
+    - sssd
+  block:
+    - name: Set dependency variables
+      ansible.builtin.include_vars: "{{ item }}"
+      loop:
+        - "{{ ansible_os_family }}/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+        - "{{ ansible_os_family }}.yml"
+
+    - name: Install Tasks
+      ansible.builtin.import_tasks: install.yml
+
+    - name: Config Tasks
+      ansible.builtin.import_tasks: config.yml
+
+    - name: Service Tasks
+      ansible.builtin.import_tasks: service.yml
+
+  rescue:
+    - name: Print Error
+      ansible.builtin.debug:
+        msg: "Unsupport platform or error occurred due to some reason."
+      failed_when: true

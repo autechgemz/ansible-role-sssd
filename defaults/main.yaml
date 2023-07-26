@@ -1,0 +1,26 @@
+---
+
+sssd_package_ensure: 'present'
+
+sssd_optional_package_ensure: 'present'
+
+sssd_service_ensure: 'started'
+
+sssd_service_enable: true
+
+sssd_optional_service_ensure: 'started'
+
+sssd_optional_service_enable: true
+
+sssd_config_options: {}
+
+sssd_config_options_default:
+  sssd:
+    debug_level: 2
+    config_file_version: 2
+    domains: default
+  domain/default:
+    id_provider: ldap
+    auth_provider: ldap
+    chpass_provider: ldap
+    access_provider: ldap

@@ -1,0 +1,27 @@
+---
+
+sssd_service_name: 'sssd'
+
+sssd_optional_service_name: 'oddjobd'
+
+sssd_package_name:
+  - 'sssd'
+  - 'sssd-client'
+  - 'sssd-ldap'
+  - 'sssd-tools'
+  - 'sssd-dbus'
+  - 'authconfig'
+
+sssd_optional_package_name:
+  - 'oddjob'
+  - 'oddjob-mkhomedir'
+
+sssd_authconfig_command:
+  - 'authconfig'
+  - '--enablesssd'
+  - '--enablesssdauth'
+  - '--enablelocauthorize'
+  - '--disableldap'
+  - '--disableldapauth'
+  - '--disableldaptls'
+  - '--update'

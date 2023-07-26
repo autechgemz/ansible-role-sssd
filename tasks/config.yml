@@ -1,0 +1,31 @@
+---
+
+- name: Config tasks
+  become: true
+  tags:
+    - sssd_config
+    - sssd
+  block:
+
+    - name: Merge configration
+      ansible.builtin.set_fact:
+        sssd_config_options_merged: "{{ sssd_config_options_default | ansible.builtin.combine(sssd_config_options, recursive=True) }}"
+
+    - name: Debug sssd_config_options_merged
+      when: sssd_debug is defined and sssd_debug
+      ansible.builtin.debug:
+        var: sssd_config_options_merged
+
+    - name: Config Tasks
+      ansible.builtin.include_tasks: "config/{{ ansible_os_family }}.yml"
+
+    - name: Generate sssd.conf file
+      ansible.builtin.template:
+        src: sssd.conf.j2
+        dest: /etc/sssd/sssd.conf
+        owner: root
+        group: root
+        mode: 0600
+      notify:
+        - Restart sssd service
+        - Restart sssd optional service

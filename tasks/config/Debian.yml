@@ -1,0 +1,41 @@
+---
+
+- name: Config tasks
+  when: ansible_os_family == 'Debian'
+  become: true
+  tags:
+    - sssd_config
+    - sssd
+  block:
+    - name: Validate homedir authconfig
+      ansible.builtin.shell: |
+        grep mkhomedir /etc/pam.d/* 2>&1 > /dev/null
+      register: mkhomedir_results
+      changed_when: false
+      failed_when: false
+
+    - name: Debug variable
+      when: sssd_debug is defined and sssd_debug
+      ansible.builtin.debug:
+        var: mkhomedir_results
+
+    - name: Enable make homedir
+      ansible.builtin.shell: |
+        {{ sssd_mkhomedir_command | join(" ") }}
+      args:
+        executable: /bin/bash
+      when: mkhomedir_results is defined and mkhomedir_results.rc and mkhomedir_results.rc != 0
+
+    - name: Enable sssd_sudoers
+      ansible.builtin.lineinfile:
+        path: /etc/nsswitch.conf
+        regexp: '^sudoers:(\s+|\w|sss)$'
+        line: 'sudoers:        files sss'
+
+    - name: Manage sssd directory
+      ansible.builtin.file:
+        state: directory
+        path: /etc/sssd
+        owner: root
+        group: root
+        mode: 0711

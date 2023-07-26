@@ -1,0 +1,31 @@
+---
+
+- name: Install tasks
+  become: true
+  tags:
+    - sssd_install
+    - sssd
+  block:
+    - name: Install sssd packages
+      when: ansible_os_family == 'Debian'
+      ansible.builtin.apt:
+        name: "{{ sssd_package_name }}"
+        state: "{{ sssd_package_ensure }}"
+        update_cache: true
+    - name: Install oddjobd packages
+      when: ansible_os_family == 'Debian'
+      ansible.builtin.apt:
+        name: "{{ sssd_optional_package_name }}"
+        state: "{{ sssd_optional_package_ensure }}"
+        update_cache: true
+
+    - name: Install oddjobd packages
+      when: ansible_os_family == 'RedHat'
+      ansible.builtin.yum:
+        name: "{{ sssd_optional_package_name }}"
+        state: "{{ sssd_optional_package_ensure }}"
+    - name: Install sssd packages
+      when: ansible_os_family == 'RedHat'
+      ansible.builtin.yum:
+        name: "{{ sssd_package_name }}"
+        state: "{{ sssd_package_ensure }}"

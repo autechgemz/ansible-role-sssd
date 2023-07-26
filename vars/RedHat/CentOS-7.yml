@@ -1,0 +1,6 @@
+---
+
+sssd_mkhomedir_command:
+  - 'authconfig'
+  - '--enablemkhomedir'
+  - '--update'

@@ -1,0 +1,68 @@
+---
+
+- name: Config tasks
+  when: ansible_os_family == 'RedHat'
+  become: true
+  tags:
+    - sssd_config
+    - sssd
+  block:
+    - name: Validate sssd authconfig
+      when:
+        - not ansible_check_mode
+      ansible.builtin.shell: |
+        grep -qE pam_sss /etc/pam.d/* 2>&1 > /dev/null
+      register: sssd_results
+      changed_when: false
+      failed_when: false
+
+    - name: Debug variable
+      when: sssd_debug is defined and sssd_debug
+      ansible.builtin.debug:
+        var: sssd_results
+
+    - name: Enable sssd authconfig
+      when:
+        - not ansible_check_mode
+        - sssd_results is defined and sssd_results.rc is defined and sssd_results.rc != 0
+      ansible.builtin.shell: |
+        {{ sssd_authconfig_command | join(" ") }}
+      args:
+        executable: /bin/bash
+
+    - name: Validate homedir authconfig
+      when:
+        - not ansible_check_mode
+      ansible.builtin.shell: |
+        grep -qE mkhomedir /etc/pam.d/* 2>&1 > /dev/null
+      register: mkhomedir_results
+      changed_when: false
+      failed_when: false
+
+    - name: Debug variable
+      when: sssd_debug is defined and sssd_debug
+      ansible.builtin.debug:
+        var: mkhomedir_results
+
+    - name: Enable make homedir
+      when:
+        - not ansible_check_mode
+        - mkhomedir_results.rc is defined and mkhomedir_results.rc and mkhomedir_results.rc != 0
+      ansible.builtin.shell: |
+        {{ sssd_mkhomedir_command | join(" ") }}
+      args:
+        executable: /bin/bash
+
+    - name: Enable sssd_sudoers
+      ansible.builtin.lineinfile:
+        path: /etc/nsswitch.conf
+        regexp: '^sudoers:(\s+|\w|sss)$'
+        line: 'sudoers:    files sss'
+
+    - name: Manage sssd directory
+      ansible.builtin.file:
+        state: directory
+        path: /etc/sssd
+        owner: sssd
+        group: sssd
+        mode: 0700

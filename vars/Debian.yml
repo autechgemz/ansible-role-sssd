@@ -1,0 +1,16 @@
+---
+
+sssd_service_name: 'sssd'
+
+sssd_optional_service_name: 'oddjobd'
+
+sssd_package_name:
+  - 'sssd'
+  - 'sssd-ldap'
+  - 'sssd-tools'
+  - 'sssd-dbus'
+
+sssd_optional_package_name:
+  - 'oddjob'
+  - 'oddjob-mkhomedir'
+  - 'libsss-sudo'

@@ -1,0 +1,15 @@
+---
+
+- name: Restart sssd service
+  become: true
+  when: not ansible_check_mode
+  ansible.builtin.systemd:
+    name: "{{ sssd_service_name }}"
+    state: restarted
+
+- name: Restart sssd optional service
+  when: not ansible_check_mode
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ sssd_optional_service_name }}"
+    state: restarted

@@ -1,0 +1,8 @@
+---
+
+sssd_authconfig_command: []
+
+sssd_mkhomedir_command:
+  - 'pam-auth-update'
+  - '--enable'
+  - 'mkhomedir'

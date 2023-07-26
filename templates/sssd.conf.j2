@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+{% if sssd_config_options_merged is defined and sssd_config_options_merged %}
+{%   for keys, values in sssd_config_options_merged.items() %}
+[{{ keys }}]
+{%     for key, value in values.items() %}
+{{ key }} = {{ value }}
+{%     endfor %}
+
+{%   endfor %}
+{% endif %}
